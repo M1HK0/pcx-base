@@ -1,0 +1,24 @@
+# Build output
+cpp/build/
+cpp/out/
+*.exe
+*.obj
+*.pdb
+*.ilk
+*.lib
+*.exp
+
+# IDE / editor
+.vs/
+.vscode/*.log
+*.user
+*.suo
+*.sln.docstates
+
+# OS
+Thumbs.db
+Desktop.ini
+
+# Configs generated at runtime (optional — keep folder structure if needed)
+configs/
+themes/

@@ -1,0 +1,5 @@
+{
+    "angelScript.implicitMutualInclusion": true,
+    "angelScript.suppressAnalyzerErrors": true,
+    "angelScript.indexExclude": ["output", "reference"]
+}

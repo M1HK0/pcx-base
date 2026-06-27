@@ -1,0 +1,16 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Bundle Perception Script",
+            "type": "angelscript-bundle",
+            "src": "source",
+            "out": "${workspaceFolder}/output/base.as",
+            "strip": true,
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}
