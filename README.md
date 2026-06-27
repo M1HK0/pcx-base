@@ -1,97 +1,152 @@
-# Perception.cx Base (pcx-base)
+# Perception.cx AngelScript Base
 
-A shared GUI foundation for building external tooling on Windows. Both branches ship the same menu system, config/theme persistence, notifications, widgets, and visual design — implemented in two different languages and runtimes.
+> **Branch:** `angelscript` — AngelScript implementation for the Perception.cx script host.  
+> See also: [`main`](https://github.com/M1HK0/pcx-base) (overview) · [`cpp`](https://github.com/M1HK0/pcx-base/tree/cpp) (native C++ port)
 
-## What this is
+An AngelScript base for building external tooling. Provides a full custom menu/GUI system, process attachment + memory I/O, and a threading/callback system.
 
-**pcx-base** is a starter template for Perception.cx-style external tools. It includes:
+## How this branch differs from `cpp`
 
-- A custom menu/GUI (windows, tabs, containers, checkboxes, sliders, keybinds, dropdowns, color pickers, cogwheel sub-menus, listboxes, tooltips, and more)
-- Config and theme save/load (base64-encoded JSON on disk)
-- On-screen draggable widgets (watermark/HUD panels)
-- Toast notifications with animations
-- A consistent dark theme and menu open/close animations
+| | **AngelScript** (this branch) | **C++** (`cpp` branch) |
+|---|-------------------------------|------------------------|
+| Runtime | Perception.cx host | Standalone Win32 + DX11 `.exe` |
+| Rendering | Host `renderer::` overlay API | ImGui / DirectX 11 window |
+| Process memory | Full attachment + read/write/scan | Not included (demo UI only) |
+| Build | Load scripts in Perception.cx | CMake + MSVC |
+| Entry point | `source/entry.as` | `cpp/src/main.cpp` |
 
-The **AngelScript** branch is the production base for Perception.cx scripts: it attaches to a target process, reads/writes memory, and renders as an overlay via the host runtime.
+Use **this branch** when building real external tools inside Perception.cx. Use **`cpp`** to prototype the menu locally without the host.
 
-The **C++** branch is a standalone Win32 + DirectX 11 demo that ports the same GUI to native code with ImGui — useful for local development, UI prototyping, or building a native app without the script host.
+---
 
-## Branches
+## Table of Contents
 
-| Branch | Language | Use when |
-|--------|----------|----------|
-| [`angelscript`](../../tree/angelscript) | AngelScript (`.as`) | Building scripts inside the Perception.cx host with process attachment and overlay rendering |
-| [`cpp`](../../tree/cpp) | C++17 + ImGui | Running a standalone desktop window, testing GUI changes locally, or extending the native port |
+- [Getting Started](#getting-started)
+- [Menu / GUI System](#menu--gui-system)
+- [Attachment System](#attachment-system)
+- [Threading](#threading)
+- [Globals](#globals)
 
-Switch branches with:
+---
 
-```bash
-git checkout angelscript   # AngelScript base
-git checkout cpp           # C++ port
+## Getting Started
+
+Entry point lives in [source/entry.as](source/entry.as). Minimal skeleton:
+
+```angelscript
+int main() {
+    globals::username = get_username();
+    gui::initialize("Perception.cx", vector2(500, 480));
+
+    if (!globals::process.attach(globals::target_process))
+        return 0;
+
+    globals::hwnd = window::find_by_pid(globals::process.pid);
+    if (globals::hwnd == 0)
+        return 0;
+
+    int x, y, w, h;
+    if (!window::get_rect(globals::hwnd, x, y, w, h))
+        return 0;
+
+    renderer::fonts::initialize();
+    thread::register("on_render", on_render, 0); // 0ms = vsync
+    return 1;
+}
+
+void on_unload() {
+    globals::process.detach();
+}
 ```
 
-## AngelScript vs C++ — key differences
+The render callback in [source/threads/on_render.as](source/threads/on_render.as) drives the frame:
 
-| | **AngelScript** (`angelscript`) | **C++** (`cpp`) |
-|---|--------------------------------|-----------------|
-| **Runtime** | Perception.cx script host | Standalone `.exe` (Win32 + DX11) |
-| **Rendering** | Host `renderer::` API | ImGui / custom `ImDrawList` wrapper |
-| **Process attachment** | Yes — `CAttachment`, memory I/O, pattern scan | No — demo window only |
-| **Overlay** | Renders over the attached game/app window | Own 500×480 window titled "Perception.cx" |
-| **Threading** | Host callback threads (`thread::register`) | Standard Win32 message loop |
-| **Build** | Loaded by Perception.cx (no separate compile step) | CMake + MSVC (`cmake -B build && cmake --build build`) |
-| **Dependencies** | Provided by the host | ImGui, nlohmann/json (fetched via CMake) |
-| **Source layout** | `source/` — entry, GUI, features, threads | `cpp/src/` — same GUI structure in C++ |
-| **Config / themes** | `configs/base/`, `themes/base/` | Same paths, relative to working directory |
+```angelscript
+void on_render(int id, int data_index) {
+    set_thread_to_highest_priority();
+    int64 t = thread::begin_timing();
 
-### Same on both branches
+    cursor::update();
+    gui::tick();
+    gui::update();
+    widgets::update();
+    notifications::update();
 
-- GUI hierarchy: `CWindow` → `CTab` → `CContainer` → elements
-- Element types and attachment model (keybind/colorpicker/cogwheel/tooltip on rows)
-- Config and theme file format (`.cfg` / `.theme`, base64 JSON)
-- Default colors, menu key (Insert), widget snapping, notification styles
-- Example tabs: Settings, Themes, Widgets demo
+    widgets::render();
+    gui::render();
+    notifications::render();
 
-### Choose AngelScript if you…
-
-- Write tools for Perception.cx and need process memory access
-- Want the overlay to draw on top of a target application
-- Rely on the host for fonts, input, and render callbacks
-
-### Choose C++ if you…
-
-- Want to run and debug the menu without the Perception.cx host
-- Prefer native code, CMake, and ImGui
-- Are porting or validating GUI behavior before scripting
-
-## Quick start
-
-### AngelScript
-
-See the [`angelscript`](../../tree/angelscript) branch. Entry point: `source/entry.as`. Load the project in Perception.cx and set your target process in `source/globals.as`.
-
-### C++
-
-See the [`cpp`](../../tree/cpp) branch.
-
-```powershell
-cd cpp
-cmake -B build -G "Visual Studio 17 2022" -A x64
-cmake --build build --config Release
-.\build\Release\perception_gui.exe
+    thread::end_timing("on_render", t);
+}
 ```
 
-Requires Windows 10/11, MSVC, CMake 3.20+, and Tahoma fonts in `C:\Windows\Fonts\`.
+Set your target process in [source/globals.as](source/globals.as) (`globals::target_process`).
 
-## Project structure (main)
+---
+
+## Menu / GUI System
+
+Everything lives under [source/dependencies/gui/](source/dependencies/gui/). The hierarchy is:
 
 ```
-pcx-base/
-├── source/          # AngelScript — scripts, GUI, features (angelscript branch)
-├── cpp/             # C++ port — CMake project, ImGui backend (cpp branch)
-└── README.md        # This file (overview on main; branch-specific docs on each branch)
+CWindow  ->  CTab  ->  CContainer  ->  CElement (checkbox, slider, ...)
 ```
 
-## License
+### Containers
 
-Private repository — Perception.cx internal base template.
+- **CWindow** — [containers/window.as](source/dependencies/gui/containers/window.as)
+- **CTab** — [containers/tab.as](source/dependencies/gui/containers/tab.as)
+- **CContainer** — [containers/container.as](source/dependencies/gui/containers/container.as) — factory for all elements
+
+### Elements
+
+| Element | Read value |
+|---|---|
+| `CCheckbox` | `bool get()` |
+| `CSliderInt` / `CSliderFloat` | `int get()` / `float get()` |
+| `CKeybind` | `bool is_active()` |
+| `CDropdown` | `int get()` / `string get_string()` |
+| `CMultiSelect` | `bool get(i)` / `array<int> get_selected()` |
+| `CTextInput` | `string get()` |
+| `CColorPicker` | `color_t get()` |
+| `CListBox` | `array<int> get_selected()` |
+
+Elements support attachments: keybind, colorpicker, cogwheel sub-menus, and tooltips on the same row.
+
+### Config, themes, notifications, widgets
+
+- **Config** — [gui/config_system.as](source/dependencies/gui/config_system.as) — `.cfg` files in `configs/base/`
+- **Themes** — [gui/theme_system.as](source/dependencies/gui/theme_system.as) — `.theme` files in `themes/base/`
+- **Notifications** — `notifications::create()`, `create_success()`, `create_error()`
+- **Widgets** — draggable HUD panels via [gui/widgets.as](source/dependencies/gui/widgets.as)
+
+---
+
+## Attachment System
+
+[source/dependencies/attachment.as](source/dependencies/attachment.as) — attach to a process by name, then use [process.as](source/dependencies/process.as) for typed memory reads/writes, pattern scans, and engine helpers (FString, FVector, etc.).
+
+[window.as](source/dependencies/window.as) and [cursor.as](source/dependencies/cursor.as) handle target window lookup and per-frame input.
+
+---
+
+## Threading
+
+[source/dependencies/thread.as](source/dependencies/thread.as) — register callbacks with `thread::register(name, callback, interval_ms)`. Use `interval_ms = 0` for every-frame (vsync) rendering.
+
+---
+
+## Globals
+
+[source/globals.as](source/globals.as):
+
+```angelscript
+string      globals::target_process;   // e.g. "notepad.exe"
+CAttachment globals::process;
+uint64      globals::hwnd;
+string      globals::username;
+string      globals::config_path;      // default "configs/base"
+uint8       globals::menu_alpha;
+float       globals::menu_scale;
+array<uint64> globals::fonts;
+```
