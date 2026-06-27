@@ -20,8 +20,8 @@ The **C++** branch is a standalone Win32 + DirectX 11 demo that ports the same G
 
 | Branch | Language | Use when |
 |--------|----------|----------|
-| [`angelscript`](../../tree/angelscript) | AngelScript (`.as`) | Building scripts inside the Perception.cx host with process attachment and overlay rendering |
-| [`cpp`](../../tree/cpp) | C++17 + ImGui | Running a standalone desktop window, testing GUI changes locally, or extending the native port |
+| [`angelscript`](https://github.com/M1HK0/pcx-base/tree/angelscript) | AngelScript (`.as`) | Building scripts inside the Perception.cx host with process attachment and overlay rendering |
+| [`cpp`](https://github.com/M1HK0/pcx-base/tree/cpp) | C++17 + ImGui | Running a standalone desktop window, testing GUI changes locally, or extending the native port |
 
 Switch branches with:
 
@@ -68,11 +68,11 @@ git checkout cpp           # C++ port
 
 ### AngelScript
 
-See the [`angelscript`](../../tree/angelscript) branch. Entry point: `source/entry.as`. Load the project in Perception.cx and set your target process in `source/globals.as`.
+See the [`angelscript`](https://github.com/M1HK0/pcx-base/tree/angelscript) branch. Entry point: `source/entry.as`. Load the project in Perception.cx and set your target process in `source/globals.as`.
 
 ### C++
 
-See the [`cpp`](../../tree/cpp) branch.
+See the [`cpp`](https://github.com/M1HK0/pcx-base/tree/cpp) branch.
 
 ```powershell
 cd cpp
