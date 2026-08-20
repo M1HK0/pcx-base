@@ -1,6 +1,7 @@
 # Build output
 cpp/build/
 cpp/out/
+output/
 *.exe
 *.obj
 *.pdb

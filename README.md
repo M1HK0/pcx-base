@@ -94,4 +94,4 @@ pcx-base/
 
 ## License
 
-Private repository — Perception.cx internal base template.
+Open-source GUI base template for Perception.cx tooling.
