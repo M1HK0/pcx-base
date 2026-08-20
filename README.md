@@ -1,23 +1,10 @@
 # Perception.cx AngelScript Base
 
-> **Branch:** `angelscript` — AngelScript implementation for the Perception.cx script host.  
-> See also: [`main`](https://github.com/M1HK0/pcx-base) (overview) · [`cpp`](https://github.com/M1HK0/pcx-base/tree/cpp) (native C++ port)
+> **Branch:** `angelscript` â€” AngelScript implementation for the Perception.cx script host.  
+> See also: [`main`](https://github.com/M1HK0/pcx-base) (overview) Â· [`cpp`](https://github.com/M1HK0/pcx-base/tree/cpp) (native C++ port)
 
 An AngelScript base for building external tooling. Provides a full custom menu/GUI system, process attachment + memory I/O, and a threading/callback system.
 
-## How this branch differs from `cpp`
-
-| | **AngelScript** (this branch) | **C++** (`cpp` branch) |
-|---|-------------------------------|------------------------|
-| Runtime | Perception.cx host | Standalone Win32 + DX11 `.exe` |
-| Rendering | Host `renderer::` overlay API | ImGui / DirectX 11 window |
-| Process memory | Full attachment + read/write/scan | Not included (demo UI only) |
-| Build | Load scripts in Perception.cx | CMake + MSVC |
-| Entry point | `source/entry.as` | `cpp/src/main.cpp` |
-
-Use **this branch** when building real external tools inside Perception.cx. Use **`cpp`** to prototype the menu locally without the host.
-
----
 
 ## Table of Contents
 
@@ -94,9 +81,9 @@ CWindow  ->  CTab  ->  CContainer  ->  CElement (checkbox, slider, ...)
 
 ### Containers
 
-- **CWindow** — [containers/window.as](source/dependencies/gui/containers/window.as)
-- **CTab** — [containers/tab.as](source/dependencies/gui/containers/tab.as)
-- **CContainer** — [containers/container.as](source/dependencies/gui/containers/container.as) — factory for all elements
+- **CWindow** â€” [containers/window.as](source/dependencies/gui/containers/window.as)
+- **CTab** â€” [containers/tab.as](source/dependencies/gui/containers/tab.as)
+- **CContainer** â€” [containers/container.as](source/dependencies/gui/containers/container.as) â€” factory for all elements
 
 ### Elements
 
@@ -115,16 +102,16 @@ Elements support attachments: keybind, colorpicker, cogwheel sub-menus, and tool
 
 ### Config, themes, notifications, widgets
 
-- **Config** — [gui/config_system.as](source/dependencies/gui/config_system.as) — `.cfg` files in `configs/base/`
-- **Themes** — [gui/theme_system.as](source/dependencies/gui/theme_system.as) — `.theme` files in `themes/base/`
-- **Notifications** — `notifications::create()`, `create_success()`, `create_error()`
-- **Widgets** — draggable HUD panels via [gui/widgets.as](source/dependencies/gui/widgets.as)
+- **Config** â€” [gui/config_system.as](source/dependencies/gui/config_system.as) â€” `.cfg` files in `configs/base/`
+- **Themes** â€” [gui/theme_system.as](source/dependencies/gui/theme_system.as) â€” `.theme` files in `themes/base/`
+- **Notifications** â€” `notifications::create()`, `create_success()`, `create_error()`
+- **Widgets** â€” draggable HUD panels via [gui/widgets.as](source/dependencies/gui/widgets.as)
 
 ---
 
 ## Attachment System
 
-[source/dependencies/attachment.as](source/dependencies/attachment.as) — attach to a process by name, then use [process.as](source/dependencies/process.as) for typed memory reads/writes, pattern scans, and engine helpers (FString, FVector, etc.).
+[source/dependencies/attachment.as](source/dependencies/attachment.as) â€” attach to a process by name, then use [process.as](source/dependencies/process.as) for typed memory reads/writes, pattern scans, and engine helpers (FString, FVector, etc.).
 
 [window.as](source/dependencies/window.as) and [cursor.as](source/dependencies/cursor.as) handle target window lookup and per-frame input.
 
@@ -132,7 +119,7 @@ Elements support attachments: keybind, colorpicker, cogwheel sub-menus, and tool
 
 ## Threading
 
-[source/dependencies/thread.as](source/dependencies/thread.as) — register callbacks with `thread::register(name, callback, interval_ms)`. Use `interval_ms = 0` for every-frame (vsync) rendering.
+[source/dependencies/thread.as](source/dependencies/thread.as) â€” register callbacks with `thread::register(name, callback, interval_ms)`. Use `interval_ms = 0` for every-frame (vsync) rendering.
 
 ---
 
