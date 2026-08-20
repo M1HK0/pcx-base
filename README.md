@@ -1,24 +1,10 @@
-# Perception.cx GUI — C++ Port
+# Perception.cx GUI â€” C++ Port
 
-> **Branch:** `cpp` — Standalone Win32 + DirectX 11 port with ImGui.  
-> See also: [`main`](https://github.com/M1HK0/pcx-base) (overview) · [`angelscript`](https://github.com/M1HK0/pcx-base/tree/angelscript) (Perception.cx script base)
+> **Branch:** `cpp` â€” Standalone Win32 + DirectX 11 port with ImGui.  
+> See also: [`main`](https://github.com/M1HK0/pcx-base) (overview) Â· [`angelscript`](https://github.com/M1HK0/pcx-base/tree/angelscript) (Perception.cx script base)
 
 Standalone demo application porting the Perception.cx AngelScript GUI base to C++ with ImGui as the rendering backend.
 
-## How this branch differs from `angelscript`
-
-| | **C++** (this branch) | **AngelScript** (`angelscript` branch) |
-|---|----------------------|----------------------------------------|
-| Runtime | Standalone `.exe` | Perception.cx script host |
-| Rendering | ImGui + DirectX 11 window | Host overlay `renderer::` API |
-| Process memory | Not included | Full attach + read/write/scan |
-| Build | CMake + MSVC | Load `.as` scripts in host |
-| Entry point | `cpp/src/main.cpp` | `source/entry.as` |
-| Use case | Local UI dev / native app | Production external tools |
-
-Use **this branch** to run and tweak the menu without Perception.cx. Use **`angelscript`** for real overlay tooling with memory access.
-
----
 
 ## Requirements
 
@@ -30,8 +16,8 @@ Use **this branch** to run and tweak the menu without Perception.cx. Use **`ange
 
 ## Dependencies (fetched automatically)
 
-- [Dear ImGui](https://github.com/ocornut/imgui) — `docking` branch
-- [nlohmann/json](https://github.com/nlohmann/json) — v3.11.3
+- [Dear ImGui](https://github.com/ocornut/imgui) â€” `docking` branch
+- [nlohmann/json](https://github.com/nlohmann/json) â€” v3.11.3
 
 ## Build
 
@@ -56,10 +42,10 @@ The executable is written to `cpp/build/Release/perception_gui.exe` (or `Debug/p
 .\build\Release\perception_gui.exe
 ```
 
-Run from the `cpp` directory (or any directory) — config and theme files are created relative to the working directory:
+Run from the `cpp` directory (or any directory) â€” config and theme files are created relative to the working directory:
 
-- `configs/base/` — `.cfg` config files (base64-encoded JSON)
-- `themes/base/` — `.theme` theme files
+- `configs/base/` â€” `.cfg` config files (base64-encoded JSON)
+- `themes/base/` â€” `.theme` theme files
 
 ## Controls
 
@@ -85,23 +71,23 @@ Run from the `cpp` directory (or any directory) — config and theme files are c
 
 ```
 cpp/
-├── CMakeLists.txt
-├── README.md
-└── src/
-    ├── main.cpp                 # Win32 + DX11 entry point
-    └── pcx/
-        ├── renderer.cpp         # ImDrawList renderer wrapper
-        ├── input.cpp            # Cursor and keyboard input
-        ├── gui/
-        │   ├── elements_all.hpp # Element class declarations
-        │   ├── elements_impl.cpp
-        │   ├── containers.cpp   # Window, tab, container
-        │   ├── registration.cpp # Tab initialization
-        │   └── ...
+â”śâ”€â”€ CMakeLists.txt
+â”śâ”€â”€ README.md
+â””â”€â”€ src/
+    â”śâ”€â”€ main.cpp                 # Win32 + DX11 entry point
+    â””â”€â”€ pcx/
+        â”śâ”€â”€ renderer.cpp         # ImDrawList renderer wrapper
+        â”śâ”€â”€ input.cpp            # Cursor and keyboard input
+        â”śâ”€â”€ gui/
+        â”‚   â”śâ”€â”€ elements_all.hpp # Element class declarations
+        â”‚   â”śâ”€â”€ elements_impl.cpp
+        â”‚   â”śâ”€â”€ containers.cpp   # Window, tab, container
+        â”‚   â”śâ”€â”€ registration.cpp # Tab initialization
+        â”‚   â””â”€â”€ ...
 ```
 
 ## Notes
 
 - This is a **standalone demo window**, not an overlay.
-- Window size is 500×480 with title **Perception.cx**, matching the AngelScript `entry.as` initialization.
+- Window size is 500Ă—480 with title **Perception.cx**, matching the AngelScript `entry.as` initialization.
 - Colors match `gui/config.as` exactly and can be customized via the Themes tab.
